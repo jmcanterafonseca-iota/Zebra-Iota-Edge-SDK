@@ -52,7 +52,7 @@
     "dependencies": {
         "@capacitor/android": "^2.4.7",
         "@capacitor/core": "^2.4.7",
-        "@iota/identity-wasm": "~0.4.0",
+        "@iota/iota.js": "^1.9.0-stardust.25",
         "@rollup/plugin-json": "^4.1.0",
         "@zxing/library": "^0.18.6",
         "bwip-js": "^3.0.0",

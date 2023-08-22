@@ -6,6 +6,8 @@ import * as IotaIdentity from "@iota/identity-wasm/web";
 import { CREDENTIAL_EXPIRY_DAYS, IDENTITY_WASM_PATH } from "../config";
 import { get } from "svelte/store";
 import type { CredentialType } from "../models/types/CredentialType";
+import { createDID } from "./createDIDFundedByPlugin";
+import { Base58 } from "@iota/util.js";
 
 const {
     Client,
@@ -58,34 +60,13 @@ export class IdentityService {
      * @returns {Promise}
      */
     async createIdentity(): Promise<Identity> {
-        // Initialize the Library - Is cached after first initialization
-        await IotaIdentity.init(IDENTITY_WASM_PATH);
-        const client = this.getClient();
-
-        // Generate a new keypair and DID document
-        const key = new KeyPair(KeyType.Ed25519);
-        const doc = new Document(key, client.network().toString());
-
-        // Add a Merkle Key Collection method for Bob, so compromised keys can be revoked.
-        const keys = new KeyCollection(KeyType.Ed25519, 8);
-        const method = VerificationMethod.createMerkleKey(Digest.Sha256, doc.id, keys, "key-collection");
-
-        // Add to the DID Document as a general-purpose verification method
-        doc.insertMethod(method, "VerificationMethod");
-
-        // Signing
-        doc.sign(key);
-
-        // Publish
-        await client.publishDocument(doc);
+        const result = await createDID();
         return {
-            didDoc: JSON.stringify(doc.toJSON()),
-            publicAuthKey: key.public,
-            privateAuthKey: key.private,
-            doc,
-            key,
-            keys,
-            method
+            didDoc: JSON.stringify(result.doc),
+            publicAuthKey: Base58.encode(result.keys[0].publicKey),
+            privateAuthKey:  Base58.encode(result.keys[0].publicKey),
+            doc: result.doc,
+            keys: result.keys
         };
     }
 

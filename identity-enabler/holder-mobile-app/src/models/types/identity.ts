@@ -1,13 +1,12 @@
-import type { Document, KeyPair, KeyCollection, VerificationMethod } from "@iota/identity-wasm/web";
+import type { Doc } from "../../services/utilHttp";
+import type { Key } from "./key";
 
 export type Identity = {
     didDoc: string;
     publicAuthKey: string;
     privateAuthKey: string;
-    doc: Document;
-    key: KeyPair;
-    keys: KeyCollection | any;
-    method: VerificationMethod | any;
+    doc: Doc;
+    keys: Key[];
 };
 
 export type IdentityConfig = {
